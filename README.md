@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://i.gifer.com/Jw42.gif"/>
+  <img src="https://cdn0.sbnation.com/assets/3417793/moveoverlynnswann.gif"/>
 </p>
 
-# _Signal_
+# Signal
 ## Introdução
-## Implemetação
+## Implementação
 ### launch_process.c
 ```c
 #include <stdio.h>
