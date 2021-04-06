@@ -131,3 +131,22 @@ int main(int argc, char const *argv[])
 }
 ```
 ## Conclusão
+
+
+```bash
+Apr  6 06:22:37 cssouza-Latitude-5490 LED SIGNAL[4277]: LED Status: On
+Apr  6 06:22:39 cssouza-Latitude-5490 LED SIGNAL[4277]: LED Status: Off
+Apr  6 06:22:40 cssouza-Latitude-5490 LED SIGNAL[4277]: LED Status: On
+Apr  6 06:22:40 cssouza-Latitude-5490 LED SIGNAL[4277]: LED Status: Off
+Apr  6 06:22:41 cssouza-Latitude-5490 LED SIGNAL[4277]: LED Status: On
+Apr  6 06:22:42 cssouza-Latitude-5490 LED SIGNAL[4277]: LED Status: Off
+```
+
+```bash
+echo "0" > /tmp/signal_file
+```
+
+```bash
+pi        2773     1  0 10:25 pts/0    00:00:00 led_process
+pi        2774     1  1 10:25 pts/0    00:00:00 button_process 2773
+```
