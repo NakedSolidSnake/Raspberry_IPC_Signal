@@ -8,6 +8,22 @@
 
 #define _1ms    1000
 
+static void wait_press(void *object, Button_Interface *button)
+{
+    while (true)
+    {
+        if (!button->Read(object))
+        {
+            usleep(_1ms * 100);
+            break;
+        }
+        else
+        {
+            usleep(_1ms);
+        }
+    }
+}
+
 bool Button_Run(void *object, char **argv, Button_Interface *button)
 {
     int pidLed;
@@ -22,16 +38,8 @@ bool Button_Run(void *object, char **argv, Button_Interface *button)
 
     while (true)
     {
-        while(true)
-        {
-            if(!button->Read(object)){
-                usleep(_1ms * 100);
-                kill(pidLed, SIGUSR1);
-                break;
-            }else{
-                usleep( _1ms );
-            }
-        }
+        wait_press(object, button);
+        kill(pidLed, SIGUSR1);
     }
 
     return false;
