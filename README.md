@@ -61,7 +61,7 @@ int kill(pid_t pid, int sig);
 
 ## Aguardando um Signal
 
-Para fazer com o programa somente processe mediante a um evento por Signal, pode-se usar a _system call_
+Para fazer com que o programa somente processe mediante a um evento, pode-se usar a _system call_
 
 ```c
 #include <unistd.h>
