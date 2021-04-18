@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.gifer.com/9cOl.gif"/>
+  <img src="https://media.istockphoto.com/vectors/cartoon-american-football-player-jumping-catch-on-the-field-vector-id1083955036?s=612x612"/>
 </p>
 
 # _Signal_
