@@ -83,7 +83,7 @@ Pode-se se notar no programa que, em nenhum momento é chamado o handler, mas me
 
 ## Implementação
 
-Para demonstrar o uso desse IPC, iremos utilizar um esquema de notifição, onde o processo Notificador (_button_process_) vai notificar o processo Consumidor(_led_process_) que está em sleep aguardando a notificação para alterar seu estado.
+Para demonstrar o uso desse IPC, iremos utilizar um esquema de notifição, onde o processo Notificador (_button_process_) vai notificar o processo Consumidor(_led_process_) que está em sleep aguardando a notificação para alterar seu estado, essa aplicação é composta por 3 executáveis:
 
 * _launch_processes_ - é responsável por lançar os processos _button_process_ e _led_process_ atráves da combinação _fork_ e _exec_
 * _button_interface_ - é reponsável por ler o GPIO em modo de leitura da Raspberry Pi e enviar um evento Signal
