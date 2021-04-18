@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cdn0.sbnation.com/assets/3417793/moveoverlynnswann.gif"/>
+  <img src="https://i.gifer.com/9cOl.gif"/>
 </p>
 
 # _Signal_
