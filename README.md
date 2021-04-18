@@ -25,11 +25,11 @@
 * [Referência](#referência)
 
 ## Introdução
-Signal é uma notificação que avisa um determinado processo que um evento ocorreu. Signal é considerado uma interrupção por software, similiar a interrupção via hardware, onde quando há um evento, o fluxo do programa é alterado, normalmente chamando uma função que foi registrada para ser invocada quando esse sinal acontecer. Signal pode ser considerado um IPC porém não transmite dados, e são assíncronos, mas quando um processo o recebe, interrompe o processamento atual para atender o evento, ou seja, assim que um evento é recebido, o processamento é imediato, como boa prática os handlers registrados para os sinais devem possui uma rotina muito pequena para o tratamento desse sinal, para que possa retornar rapidamente para o ponto onde foi interrompido. Existem 31 sinais sendo que alguns deles podem ser gerados através do teclado como o SIGINT, os sinais existentes estão definidos em /usr/include/bits/signum.h para 32bits, /usr/include/x86_64-linux-gnu/bits/signum.h para 64 bits e /usr/include/arm-linux-gnueabihf/bits/signum.h para ARM. 
+Signal é uma notificação que avisa um determinado processo que um evento ocorreu. Signal é considerado uma interrupção por software, similiar a interrupção via hardware, onde quando há um evento, o fluxo do programa é alterado, normalmente chamando uma função que foi registrada para ser invocada quando esse sinal acontecer. Signal pode ser considerado um IPC porém não transmite dados, e são assíncronos, mas quando um processo o recebe, interrompe o processamento atual para atender o evento, ou seja, assim que um evento é recebido, o processamento é imediato, como boa prática os handlers registrados para os sinais devem possui uma rotina muito pequena para o tratamento desse sinal, para que possa retornar rapidamente para o ponto onde foi interrompido. Existem mais de 31 sinais sendo que alguns deles podem ser gerados através do teclado como o SIGINT, os sinais existentes estão definidos em /usr/include/bits/signum.h para 32bits, /usr/include/x86_64-linux-gnu/bits/signum.h para 64 bits e /usr/include/arm-linux-gnueabihf/bits/signum.h para ARM. 
 
 ## Registrando uma Callback para um Signal
 
-Para realizar um registro de uma callback faz-se o uso da _system call_
+Para realizar um registro de uma callback faz-se o uso da _system call signal_ que recebe dois argumentos o SIG[TIPO] que é o evento, e a callback que será executado quando houver o evento, onde a callback deve respeitar a assinatura do _sighandler_, que recebe um argumento do tipo int e não retorna nada
 ```c
 #include <signal.h>
 
@@ -37,8 +37,11 @@ typedef void (*sighandler_t)(int);
 
 sighandler_t signal(int signum, sighandler_t handler);
 ```
+Para uma explicação mais detalhada dos tipos de Signals que existem pesquisem no manpages
+```bash
+man 7 signal
+```
 
-Onde a callback deve respeitar a assinatura do _sighandler_, que recebe um argumento do tipo int e não retorna nada
 
 ## Emitindo um Signal
 
