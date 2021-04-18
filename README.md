@@ -83,7 +83,7 @@ que permite que o programa entre em sleep até que um Signal seja recebido para 
 Para exemplificar melhor é apresentado uma imagem animada que demonstra o fluxo de um programa em execução, e como é realizado o tratamento do evento
 
 <p align="center">
-  <img src="./img/ezgif.com-gif-maker.gif"/>
+  <img src="./img/Signal_2.gif"/>
 </p>
 
 Pode-se se notar no programa que, em nenhum momento é chamado o handler, mas mediante o registro prévio do callback, quando o evento é gerado, o callback é invocado, trata o sinal e retoma o fluxo normal após o tratamento do evento.
