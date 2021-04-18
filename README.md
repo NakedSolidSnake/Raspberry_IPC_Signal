@@ -25,56 +25,162 @@
 * [Referência](#referência)
 
 ## Introdução
-Preencher
+Signal é uma notificação que avisa um determinado processo que um evento ocorreu. Signal é considerado uma interrupção por software, similiar a interrupção via hardware, onde quando há um evento é gerado, o fluxo do programa é alterado, normalmente chamando uma função que é registrada para ser invocada quando esse sinal acontecer. Signal pode ser considerado um IPC porém não transmite dados, e são assincronos, porém quando um processo o recebe, interrompe o processamento atual para atender o evento, ou seja, assim que um evento é recebido, o processa de imediato, como boa prática os handlers registrados para os sinais devem possui uma rotina muito pequena para o tratamento, para que possa retorna rapidamente para o ponto onde foi interrompido. Existe 31 sinais sendo que alguns deles podem ser gerados através do teclado como o SIGINT, os sinais existentes estão definidos em /usr/include/bits/signum.h para 32bits, /usr/include/x86_64-linux-gnu/bits/signum.h para 64 bits e /usr/include/arm-linux-gnueabihf/bits/signum.h para ARM. 
+
+## Registrando uma Callback para um Signal
+
+Para realizar um registro de uma callback é usando a _system call_
+```c
+#include <signal.h>
+
+typedef void (*sighandler_t)(int);
+
+sighandler_t signal(int signum, sighandler_t handler);
+```
+
+Onde a callback deve respeitar a assinatura do _sighandler_, que é, recebe um argumento do tipo int e não retorna nada
+
+## Emitindo um Signal
+
+Com Signal é possível emitir o evento para si mesmo através da _system call_
+
+```c
+#include <signal.h>
+
+int raise(int sig);
+```
+
+ou para um processo externo, nesse caso é necessário conhecer o pid do processo no qual se quer enviar
+
+```c
+#include <sys/types.h>
+#include <signal.h>
+
+int kill(pid_t pid, int sig);
+```
+
+## Aguardando um Signal
+
+Para fazer com o programa somente processe mediante a um evento por Signal, pode-se usar a _system call_
+
+```c
+#include <unistd.h>
+
+int pause(void);
+```
+
+que permite que o programa entre em sleep até que um Signal seja recebido para assim acordar e processar.
+
+## Funcionamento da recepção de um Signal
+
+Para exemplificar melhor é apresentado uma imagem animada que demonstra o fluxo de um programa em execução, e como é realizado o tratamento do evento
+
+<p align="center">
+  <img src="./img/ezgif.com-gif-maker.gif"/>
+</p>
+
+Pode-se se notar no programa que, em nenhum momento é chamado o handler, mas mediante o registro prévio do callback, quando o evento é gerado é invocado o callback, retomando o fluxo normal após o tratamento do evento.
 
 ## Implementação
 
-Para demonstrar o uso desse IPC, iremos utilizar o modelo Produtor/Consumidor, onde o processo Produtor(_button_process_) vai escrever seu estado interno no arquivo, e o Consumidor(_led_process_) vai ler o estado interno e vai aplicar o estado para si. Aplicação é composta por três executáveis sendo eles:
+Para demonstrar o uso desse IPC, iremos utilizar um esquema de notifição, onde o processo Notificador (_button_process_) vai notificar o processo o Consumidor(_led_process_) que está em sleep aguardando a notificação para alterar seu estado.
+
 * _launch_processes_ - é responsável por lançar os processos _button_process_ e _led_process_ atráves da combinação _fork_ e _exec_
-* _button_interface_ - é reponsável por ler o GPIO em modo de leitura da Raspberry Pi e escrever o estado interno no arquivo
-* _led_interface_ - é reponsável por ler do arquivo o estado interno do botão e aplicar em um GPIO configurado como saída
+* _button_interface_ - é reponsável por ler o GPIO em modo de leitura da Raspberry Pi e enviar um evento Signal
+* _led_interface_ - é reponsável por aguardar um Signal e mudar o estado do GPIO configurado como saída
 
 ### *launch_processes*
 
-No _main_ criamos duas variáveis para armazenar o PID do *button_process* e do *led_process*, e mais duas variáveis para armazenar o resultado caso o _exec_ venha a falhar.
+No _main_ criamos duas variáveis para armazenar o PID do *button_process* e do *led_process*, e um buffer que vai ser formatado para enviar argumentos para o processo *led_process*
 ```c
-int pid_button, pid_led;
-int button_status, led_status;
+int pidLed;
+int pidButton;
+char args[BUFSIZ + 1];
 ```
 
-Em seguida criamos um processo clone, se processo clone for igual a 0, criamos um _array_ de *strings* com o nome do programa que será usado pelo _exec_, em caso o _exec_ retorne, o estado do retorno é capturado e será impresso no *stdout* e aborta a aplicação. Se o _exec_ for executado com sucesso o programa *button_process* será carregado. 
+Em seguida lançamos o processo *led_process*
 ```c
-pid_button = fork();
-
-if(pid_button == 0)
-{
-    //start button process
-    char *args[] = {"./button_process", NULL};
-    button_status = execvp(args[0], args);
-    printf("Error to start button process, status = %d\n", button_status);
-    abort();
-}   
+pidLed = fork();
+if(pidLed == 0)
+{        
+    memset(args, 0, sizeof(args));        
+    (void)execl("led_process", "led_process", NULL, (char *)0);
+    exit(EXIT_FAILURE);
+} 
 ```
 
-O mesmo procedimento é repetido novamente, porém com a intenção de carregar o *led_process*.
+Nesse ponto temos o pid do processo *led_process*, que será passado para o processo *button_process* como argumento para que seja possível notificá-lo
 
 ```c
-pid_led = fork();
-
-if(pid_led == 0)
+else if(pidLed > 0)
 {
-    //Start led process
-    char *args[] = {"./led_process", NULL};
-    led_status = execvp(args[0], args);
-    printf("Error to start led process, status = %d\n", led_status);
-    abort();
+    pidButton = fork();
+    if(pidButton == 0)
+    {            
+        memset(args, 0, sizeof(args));
+        sprintf(args, "%d", pidLed);
+        (void)execl("button_process", "button_process", args, (char *)0);
+        exit(EXIT_FAILURE);
+    }
 }
 ```
 
 ## *button_interface*
-descrever o código
+Definimos a variável que vai receber o argumento recebido via _exec_
+```c
+int pidLed;
+```
+
+Verificamos se o argumento é válido
+
+```c
+if(argv[1][0] == '\0')
+  return false;
+```
+
+Inicializamos a interface de botão
+
+```c
+if (button->Init(object) == false)
+  return false;
+```
+
+Recuperamos o pid do processo *led_process*
+```c
+sscanf(argv[1], "%d", &pidLed);
+```
+
+Aguardamos o pressionamento do botão e por fim notificamos o processo *led_process* através do _kill_
+
+```c
+wait_press(object, button);
+kill(pidLed, SIGUSR1);
+```
+
 ## *led_interface*
-descrever o código
+Definimos uma variável para controlar o estado interno do LED
+
+```c
+int state = 0
+```
+
+Registramos o sinal que desejamos receber
+```c
+signal(SIGUSR1, recv_sig);
+```
+
+Inicializamos a interface de LED
+```c
+if (led->Init(object) == false)
+  return false;
+```
+
+Aplicamos o estado inicial do LED, alteramos o estado interno e colocamos o processo em modo sleep, que aguarda um evento para aplicar o novo estado
+```c
+led->Set(object, (uint8_t)state);
+state ^= 0x01;
+pause();
+```
 
 ## Compilando, Executando e Matando os processos
 Para compilar e testar o projeto é necessário instalar a biblioteca de [hardware](https://github.com/NakedSolidSnake/Raspberry_lib_hardware) necessária para resolver as dependências de configuração de GPIO da Raspberry Pi.
@@ -161,7 +267,7 @@ $ ./kill_process.sh
 ```
 
 ## Conclusão
-Preencher
+Signal é um IPC bastante versátil, apesar de não trafegar dados, mas permite de forma rápida e simples a sincronização entre os processos, como no [Shared File](https://github.com/NakedSolidSnake/Raspberry_IPC_SharedFile), que é usado o polling para verificar se o arquivo está em uso, podemos remover o polling e usar a notificação para que o processo leia quando e somente for atualizado, reduzindo assim processamento desnecessário.
 
 ## Referência
 * [Link do projeto completo](https://github.com/NakedSolidSnake/Raspberry_IPC_Signal)

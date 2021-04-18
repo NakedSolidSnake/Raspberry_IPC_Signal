@@ -15,7 +15,7 @@ bool LED_Run(void *object, LED_Interface *led)
     signal(SIGUSR1, recv_sig);    
 
 
-     if (led->Init(object) == false)
+    if (led->Init(object) == false)
         return false;
 
 
