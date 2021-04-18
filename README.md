@@ -38,7 +38,7 @@ typedef void (*sighandler_t)(int);
 sighandler_t signal(int signum, sighandler_t handler);
 ```
 
-Onde a callback deve respeitar a assinatura do _sighandler_, que é, recebe um argumento do tipo int e não retorna nada
+Onde a callback deve respeitar a assinatura do _sighandler_, que recebe um argumento do tipo int e não retorna nada
 
 ## Emitindo um Signal
 
