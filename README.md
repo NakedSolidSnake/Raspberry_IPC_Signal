@@ -29,7 +29,7 @@ Signal é uma notificação que avisa um determinado processo que um evento ocor
 
 ## Registrando uma Callback para um Signal
 
-Para realizar um registro de uma callback é usando a _system call_
+Para realizar um registro de uma callback faz-se o uso da _system call_
 ```c
 #include <signal.h>
 
