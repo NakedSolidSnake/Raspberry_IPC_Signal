@@ -79,7 +79,7 @@ Para exemplificar melhor é apresentado uma imagem animada que demonstra o fluxo
   <img src="./img/ezgif.com-gif-maker.gif"/>
 </p>
 
-Pode-se se notar no programa que, em nenhum momento é chamado o handler, mas mediante o registro prévio do callback, quando o evento é gerado é invocado o callback, retomando o fluxo normal após o tratamento do evento.
+Pode-se se notar no programa que, em nenhum momento é chamado o handler, mas mediante o registro prévio do callback, quando o evento é gerado, o callback é invocado, trata o sinal e retoma o fluxo normal após o tratamento do evento.
 
 ## Implementação
 
