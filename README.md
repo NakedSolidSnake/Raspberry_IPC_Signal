@@ -91,7 +91,7 @@ Para demonstrar o uso desse IPC, iremos utilizar um esquema de notifição, onde
 
 ### *launch_processes*
 
-No _main_ criamos duas variáveis para armazenar o PID do *button_process* e do *led_process*, e um buffer que vai ser formatado para enviar argumentos para o processo *led_process*
+No _main_ criamos duas variáveis para armazenar o PID do *button_process* e do *led_process*, e um buffer que vai ser formatado para enviar argumentos para o processo *button_process*
 ```c
 int pidLed;
 int pidButton;
