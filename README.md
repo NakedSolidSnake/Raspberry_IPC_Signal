@@ -37,7 +37,7 @@ typedef void (*sighandler_t)(int);
 
 sighandler_t signal(int signum, sighandler_t handler);
 ```
-Para uma explicação mais detalhada dos tipos de Signals que existem pesquisem no manpages
+Para uma explicação mais detalhada dos tipos de Signals, pesquise no manual do Linux
 ```bash
 man 7 signal
 ```
