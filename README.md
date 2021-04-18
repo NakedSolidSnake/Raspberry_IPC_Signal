@@ -267,7 +267,7 @@ $ ./kill_process.sh
 ```
 
 ## Conclusão
-Signal é um IPC bastante versátil, apesar de não trafegar dados, mas permite de forma rápida e simples a sincronização entre os processos, como no [Shared File](https://github.com/NakedSolidSnake/Raspberry_IPC_SharedFile), que é usado o polling para verificar se o arquivo está em uso, podemos remover o polling e usar a notificação para que o processo leia quando e somente for atualizado, reduzindo assim processamento desnecessário.
+Signal é um IPC bastante versátil, apesar de não trafegar dados, permite de forma rápida e simples a sincronização entre os processos, como no [Shared File](https://github.com/NakedSolidSnake/Raspberry_IPC_SharedFile), que é usado o polling para verificar se o arquivo está em uso, podemos remover o polling e usar a notificação para que o processo leia quando e somente for atualizado, reduzindo assim processamento desnecessário.
 
 ## Referência
 * [Link do projeto completo](https://github.com/NakedSolidSnake/Raspberry_IPC_Signal)
